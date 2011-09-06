@@ -1,7 +1,7 @@
 #!perl -T
 
 # for develop
-#use lib qw(./lib/);
+use lib qw(./lib/);
 #use Smart::Comments;
 #use Test::More qw( no_plan );
 

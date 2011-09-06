@@ -36,7 +36,7 @@
    "provides" : {
       "Config::Merge::Dynamic" : {
          "file" : "lib/Config/Merge/Dynamic.pm",
-         "version" : "0.06"
+         "version" : "0.08"
       }
    },
    "release_status" : "stable",
@@ -48,5 +48,5 @@
          "url" : "https://github.com/Meettya/Config-Merge-Dynamic/"
       }
    },
-   "version" : "0.06"
+   "version" : "0.08"
 }

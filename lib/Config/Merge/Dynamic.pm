@@ -10,6 +10,9 @@ use parent 'Config::Merge';
 use Carp qw/croak/;             # die beautiful
 use Data::Diver qw/DiveVal/;    # its for correct path creation
 
+# for develop
+use Smart::Comments;
+
 =head1 NAME
 
 Config::Merge::Dynamic - load a configuration directory tree containing
@@ -17,11 +20,11 @@ YAML, JSON, XML, Perl, INI or Config::General files AND alter it in runtime.
 
 =head1 VERSION
 
-Version 0.06
+Version 0.08
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.08';
 $VERSION = eval $VERSION;
 
 =head1 SYNOPSIS
@@ -30,6 +33,26 @@ Example how to add (or replace, if values exists) values in config object:
 
 	use Config::Merge::Dynamic;
 	my $config = Config::Merge->new('/path/to/config');	
+	my $all_data = $config->inject( 'key_one.key_two.keyn', { foo =>'bar' } );
+	my $new_conf = $config->move( 'user_config', 'system_config' );
+
+
+=head1 DESCRIPTION
+
+This module expand L<Config::Merge> to make available to add/replace config data in config object in runtime.
+	
+=head1 SUBROUTINES/METHODS
+
+L<Config::Merge::Dynamic> inherits all methods from L<Config::Merge> and implements
+the following new ones.
+
+=head2 C<inject($path?, $what)>
+
+inject() are insert to object config new data,
+and context-sensetive returns of all new config data, or nothing if called in void context.
+
+First argument - path is optional, second may be scalar or arrayref or hashref.
+
 	my $all_data = $config->inject( 'key_one.key_two.keyn', { foo =>'bar' } );
 	
 Or available one-argument calling, without 'path', all data will injected to root:
@@ -55,23 +78,6 @@ And deal with array like this
 	my $all_data3 = $config->inject( 'key_three.1', 'bar' );
 	# now $all_data3 = { key_three => [ undef, 'bar' ], ... };
 
-=head1 DESCRIPTION
-
-This module expand L<Config::Merge> to make available to add/replace config data in config object in runtime.
-	
-=head1 SUBROUTINES/METHODS
-
-L<Config::Merge::Dynamic> inherits all methods from L<Config::Merge> and implements
-the following new ones.
-
-=head2 C<inject()>
-
-   $config = $config->inject( 'key_one.key_two.keyn', { foo =>'bar' } );
-
-inject() are insert to object config new data,
-and context-sensetive returns of all config data, or nothing if called in void context.
-
-First argument - path is optional, second may be any type.
 
 =cut
 
@@ -79,7 +85,8 @@ First argument - path is optional, second may be any type.
 sub inject {
 #===================================
     my $self = shift;
-    my $what = pop; # this is for optional arguments, with /where/ and without it
+    my $what =
+      pop;    # this is for optional arguments, with /where/ and without it
     my $where = shift;
 
     unless ( defined $what ) {    # NOP in void args
@@ -87,24 +94,93 @@ sub inject {
     }
 
     if ( defined $where ) {
-
-        my @data_path = $self->_path_resolution($where);
-        if ( $#data_path < 0 ) {
-            croak sprintf qq(path |%s| can`t be resoluted, die ), $where;
-        }
-
-        # move data to /where/ place
-        my $new_what = {};
-        DiveVal( $new_what, @data_path ) = $what;
-        $what = $new_what;
+        $what = $self->_prefix_value( $where, $what );
     }
 
     # merge together
     my $config = \%{ $self->C() };
-    $config = $self->_merge_hash( $config, $what );
+    $self->_merge_hash( $config, $what );
     $self->clear_cache();
 
     return &_context_sensetive_return($self);
+}
+
+=head2 C<move($source, $destination?)>
+
+move() are move one part of config data to another place (in dot-notation),
+and context-sensetive returns of all new config data, or nothing if called in void context.
+
+First argument - source requared, second - destination is optional.
+If destination is omitted source was move to the `root` of config.
+
+	my $new_conf = $config->move( 'user_config', 'system_config' );
+	# or move 'user_config' content to `root`
+	$config->move( 'user_config' );
+
+	
+=cut
+
+#===================================
+sub move {
+#===================================
+    my $self        = shift;
+    my $source      = shift;
+    my $destination = shift;
+
+    unless ( defined $source ) {    # NOP in void args
+        return &_context_sensetive_return($self);
+    }
+
+    my $data_to_insert = \%{ $self->($source) };
+    if ( defined $destination ) {
+
+        # prepend data with destination prefix
+        $data_to_insert = $self->_prefix_value( $destination, $data_to_insert );
+    }
+
+    # yap! we are undefing value, not wipe clearly, but who care?
+    my $data_to_delete = $self->_prefix_value( $source, undef );
+
+    # append data, then wipe out from old place
+    # we are keep intermediate values for little optimize
+    my $config = \%{ $self->C() };
+    $config = $self->_merge_hash( $config, $data_to_insert );
+    $self->_merge_hash( $config, $data_to_delete );
+
+    $self->clear_cache();
+
+    return &_context_sensetive_return($self);
+
+}
+
+=begin comment _prefix_value
+
+subroutine prefixing path to value.
+Now we are create value with DiveVal.
+
+=end comment
+
+=cut
+
+#===================================
+sub _prefix_value {
+#===================================
+    my $self        = shift;
+    my $destination = shift;
+    my $in_value    = shift;
+
+    my $result = {};
+
+    my @data_path = $self->_path_resolution($destination);
+    if ( $#data_path < 0 ) {
+        croak sprintf qq(path |%s| can`t be resoluted, die ), $destination;
+    }
+
+    # prexifing in_value with data_path
+    DiveVal( $result, @data_path ) = $in_value;
+
+    return $result;
+
 }
 
 =begin comment _path_resolution
@@ -128,7 +204,7 @@ sub _path_resolution {
 =begin comment _context_sensetive_return
 
 subroutine for context-sensetive returns
-any subs use goto &_context_sensetive_return to handle caller livel
+any subs use return &_context_sensetive_return to handle caller livel
 its a little black magic
 
 =end comment

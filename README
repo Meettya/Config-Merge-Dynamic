@@ -8,9 +8,10 @@ Example how to add (or replace, if values exists) values in config object:
 	use Config::Merge::Dynamic;
 	my $config = Config::Merge->new('/path/to/config');	
 	my $all_data = $config->inject( 'key_one.key_two.keyn', { foo =>'bar' } );
+	my $new_conf = $config->move( 'user_config', 'system_config' );
 
 L<Config::Merge::Dynamic> inherits all methods from L<Config::Merge> and implements
-C<inject()> method to alter config object.
+C<inject()> and C<move()> methods to alter config object.
 
 For more documentation about base method see L<Config::Merge>.
 

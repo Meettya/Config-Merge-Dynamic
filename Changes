@@ -1,5 +1,8 @@
 Revision history for Config-Merge-Dynamic
 
+0.08		2011-09-06 11:04 PM
+				Fix docs, add move() method, some code refactored.
+
 0.06    2011-09-06 12:43 PM
         First github version.
 
