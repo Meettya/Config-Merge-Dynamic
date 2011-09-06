@@ -11,7 +11,7 @@ use Carp qw/croak/;             # die beautiful
 use Data::Diver qw/DiveVal/;    # its for correct path creation
 
 # for develop
-use Smart::Comments;
+# use Smart::Comments;
 
 =head1 NAME
 
@@ -20,11 +20,11 @@ YAML, JSON, XML, Perl, INI or Config::General files AND alter it in runtime.
 
 =head1 VERSION
 
-Version 0.08
+Version 0.10
 
 =cut
 
-our $VERSION = '0.08';
+our $VERSION = '0.10';
 $VERSION = eval $VERSION;
 
 =head1 SYNOPSIS
