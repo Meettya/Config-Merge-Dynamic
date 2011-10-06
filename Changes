@@ -1,5 +1,8 @@
 Revision history for Config-Merge-Dynamic
 
+0.12		2011-10-06 03:06 PM
+				Add YAML::XS to required module.
+
 0.10		2011-09-07 02:23 AM
 				Fix docs, add move() method, some code refactored.
 

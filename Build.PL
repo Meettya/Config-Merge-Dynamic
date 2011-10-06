@@ -17,6 +17,7 @@ my $builder = Module::Build->new(
         'Carp' 			=> 1.20,
         'Config::Merge' => 1.01,
         'Data::Diver' 	=> 1.0101,
+        'YAML::XS'		=> 0.35,
     },
     add_to_cleanup      => [ 'Config-Merge-Dynamic-*' ],
     create_makefile_pl => 'traditional',

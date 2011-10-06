@@ -29,6 +29,7 @@
             "Carp" : "1.2",
             "Config::Merge" : "1.01",
             "Data::Diver" : "1.0101",
+            "YAML::XS" : "0.35",
             "perl" : "5.008"
          }
       }
@@ -36,7 +37,7 @@
    "provides" : {
       "Config::Merge::Dynamic" : {
          "file" : "lib/Config/Merge/Dynamic.pm",
-         "version" : "0.10"
+         "version" : "0.12"
       }
    },
    "release_status" : "stable",
@@ -48,5 +49,5 @@
          "url" : "https://github.com/Meettya/Config-Merge-Dynamic/"
       }
    },
-   "version" : "0.10"
+   "version" : "0.12"
 }
