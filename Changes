@@ -1,5 +1,8 @@
 Revision history for Config-Merge-Dynamic
 
+0.14		2011-10-10 01:57 AM
+				Remove Data::Diver, replace DiveVal with self-crafted algo.
+
 0.12		2011-10-06 03:06 PM
 				Add YAML::XS to required module.
 

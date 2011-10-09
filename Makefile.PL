@@ -8,7 +8,6 @@ WriteMakefile
   'PREREQ_PM' => {
                    'Carp' => '1.2',
                    'Config::Merge' => '1.01',
-                   'Data::Diver' => '1.0101',
                    'Test::More' => 0,
                    'YAML::XS' => '0.35'
                  },

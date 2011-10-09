@@ -8,7 +8,6 @@ use utf8;
 use parent 'Config::Merge';
 
 use Carp qw/croak/;             # die beautiful
-use Data::Diver qw/DiveVal/;    # its for correct path creation
 
 # for develop
 # use Smart::Comments;
@@ -20,11 +19,11 @@ YAML, JSON, XML, Perl, INI or Config::General files AND alter it in runtime.
 
 =head1 VERSION
 
-Version 0.12
+Version 0.14
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.14';
 $VERSION = eval $VERSION;
 
 =head1 SYNOPSIS
@@ -84,9 +83,8 @@ And deal with array like this
 #===================================
 sub inject {
 #===================================
-    my $self = shift;
-    my $what =
-      pop;    # this is for optional arguments, with /where/ and without it
+    my $self  = shift;
+    my $what  = pop;    # this is for optional arguments, with /where/ and without it
     my $where = shift;
 
     unless ( defined $what ) {    # NOP in void args
@@ -156,7 +154,7 @@ sub move {
 =begin comment _prefix_value
 
 subroutine prefixing path to value.
-Now we are create value with DiveVal.
+Now we are create value by self.
 
 =end comment
 
@@ -167,17 +165,27 @@ sub _prefix_value {
 #===================================
     my $self        = shift;
     my $destination = shift;
-    my $in_value    = shift;
-
-    my $result = {};
+    my $result	    = shift; # yap, its result too
 
     my @data_path = $self->_path_resolution($destination);
     if ( $#data_path < 0 ) {
         croak sprintf qq(path |%s| can`t be resoluted, die ), $destination;
     }
 
-    # prexifing in_value with data_path
-    DiveVal( $result, @data_path ) = $in_value;
+    # prexifing result with data_path
+    # its very simple thing - we are rise from root to bottom, autovivifing result
+	foreach my $key ( reverse @data_path ){
+	
+		my $temp;
+		
+		( $key =~ /^\d+$/ 
+			? $temp->[$key]
+			: $temp->{$key}
+		) = $result;
+		
+		$result = $temp;
+			
+	}
 
     return $result;
 
