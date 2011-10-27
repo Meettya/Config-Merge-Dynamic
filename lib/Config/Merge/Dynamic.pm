@@ -19,11 +19,11 @@ YAML, JSON, XML, Perl, INI or Config::General files AND alter it in runtime.
 
 =head1 VERSION
 
-Version 0.14
+Version 0.14.1
 
 =cut
 
-our $VERSION = '0.14';
+our $VERSION = '0.141';
 $VERSION = eval $VERSION;
 
 =head1 SYNOPSIS

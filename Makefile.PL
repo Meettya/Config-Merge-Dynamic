@@ -9,7 +9,8 @@ WriteMakefile
                    'Carp' => '1.2',
                    'Config::Merge' => '1.01',
                    'Test::More' => 0,
-                   'YAML::XS' => '0.35'
+                   'YAML::XS' => '0.35',
+                   'parent' => 0
                  },
   'INSTALLDIRS' => 'site',
   'EXE_FILES' => [],

@@ -14,6 +14,7 @@ my $builder = Module::Build->new(
     },
     requires => {
         'perl' 			=> 5.008,
+        'parent'		=> 0,
         'Carp' 			=> 1.20,
         'Config::Merge' => 1.01,
         'YAML::XS'		=> 0.35,
